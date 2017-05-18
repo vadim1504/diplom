@@ -27,11 +27,13 @@ public class Panel extends JPanel {
         add(new Label("Data Collection Diameter : "+ map.get("Data Collection Diameter")));
         add(new Label("Protocol Name : "+ map.get("Protocol Name")));
 
-        JButton jButton = new JButton("Generate");
+        JButton jButton = new JButton("Создать");
         add(jButton);
-        jButton.addActionListener(e->
-                new Generate(path).run()
-        );
+        jButton.addActionListener(e-> {
+            JOptionPane.showMessageDialog(null, "Ожидайте");
+            new Generate(path).run();
+
+        });
 
         setFont(new Font("Monaco", Font.PLAIN, 14));
     }

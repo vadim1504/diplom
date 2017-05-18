@@ -9,37 +9,6 @@ import java.util.List;
 
 public class CreateSTL {
 
-    public static void writeString(List<Point3f> tr,File file) {
-        PrintWriter out = null;
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            out = new PrintWriter(file.getAbsoluteFile());
-            out.println("solid stl ");
-            for(int i=0;i<tr.size();i=i+3){
-                out.println("facet normal 1 1 1 ");
-                out.println("outer loop");
-
-                out.println("vertex " + tr.get(i).x + " " + tr.get(i).y + " " + tr.get(i).z);
-                out.println("vertex " + tr.get(i+1).x + " " + tr.get(i+1).y + " " + tr.get(i+1).z);
-                out.println("vertex " + tr.get(i+2).x + " " + tr.get(i+2).y + " " + tr.get(i+2).z);
-
-                out.println("endloop ");
-                out.println("endfacet");
-            }
-            out.println("endsolid");
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            out.close();
-            JOptionPane.showMessageDialog(null, "Успешно, файл сохранён: "+file.getAbsolutePath());
-        }
-    }
-
     public static void writeBinary(List<Point3f> surfaces,File file) {
         DataOutputStream out = null;
         try {

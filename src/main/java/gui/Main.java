@@ -7,7 +7,7 @@ import java.io.File;
 public class Main extends JFrame {
 
     public Main() {
-        JFrame frame = new JFrame("STL file generation");
+        JFrame frame = new JFrame("Генератор STL файла на основе КТ");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         Font font = new Font("SansSerif", Font.PLAIN, 14);
@@ -15,17 +15,17 @@ public class Main extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         JTabbedPane jTabbedPane = new JTabbedPane();
 
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("Файл");
         fileMenu.setFont(font);
 
-        JMenuItem openItem = new JMenuItem("Open");
+        JMenuItem openItem = new JMenuItem("Открыть");
         openItem.setFont(font);
         fileMenu.add(openItem);
 
         openItem.addActionListener((e)->{
                 JFileChooser fileopen = new JFileChooser();
                 fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int ret = fileopen.showDialog(null, "Select a folder");
+                int ret = fileopen.showDialog(null, "Выберите папку с КТ изображениями");
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     File file = fileopen.getSelectedFile();
                     jTabbedPane.addTab(file.getName(),new Panel(file.getAbsolutePath()));
@@ -33,7 +33,7 @@ public class Main extends JFrame {
             }
         );
 
-        JMenuItem closeItem = new JMenuItem("Close");
+        JMenuItem closeItem = new JMenuItem("Закрыть");
         closeItem.setFont(font);
         fileMenu.add(closeItem);
 
@@ -41,7 +41,7 @@ public class Main extends JFrame {
 
         fileMenu.addSeparator();
 
-        JMenuItem exitItem = new JMenuItem("Exit");
+        JMenuItem exitItem = new JMenuItem("Выход");
         exitItem.setFont(font);
         fileMenu.add(exitItem);
 
