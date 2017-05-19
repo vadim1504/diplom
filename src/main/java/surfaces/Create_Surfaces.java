@@ -30,7 +30,7 @@ public class Create_Surfaces {
 
     private List<Point3f> getNeuropilMesh(ImagePlus var1) {
         int var6 = 127;
-        List var7 = new MCTriangulator().getTriangles(var1, var6, new boolean[]{true, true, true});
+        List var7 = new MCTriangulator().getTriangles(var1, var6);
         return var7;
     }
 }

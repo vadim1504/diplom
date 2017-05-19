@@ -4,6 +4,7 @@ import dicom.Convert;
 import dicom.Information;
 import file.FileTool;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.plugin.FolderOpener;
 import imgproc.Threshold;
@@ -11,13 +12,14 @@ import model.Slide;
 import surfaces.Create_Surfaces;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class Generate extends Thread {
+public class Generate{
 
     private String path;
     private Information information = new Information();
@@ -35,7 +37,7 @@ public class Generate extends Thread {
             BufferedImage bufferedImage;
             for (File f : FileTool.getFiles(path)) {
                 bufferedImage = Convert.convert(f);
-                bufferedImages.add(new Slide(information.getInstanceNumber(f), threshold.grabFrame(bufferedImage, 200, 255)));
+                bufferedImages.add(new Slide(information.getInstanceNumber(f), threshold.grabFrame(bufferedImage, 254, 255)));
             }
             bufferedImages.sort(Comparator.comparingInt(Slide::getId));
             String newPath = path + "\\trash";
@@ -52,10 +54,8 @@ public class Generate extends Thread {
             ImagePlus imagePlus2 = FolderOpener.open(newPath);
             FileTool.delete(folder_new);
             imagePlus2.setCalibration(calibration);
-
             Create_Surfaces create_surfaces = new Create_Surfaces(imagePlus2);
             create_surfaces.run(imagePlus.getTitle());
-
         }
     }
 }

@@ -3,23 +3,12 @@ package marchingcubes;
 import java.util.List;
 import java.util.ArrayList;
 import javax.vecmath.Point3f;
-import ij.IJ;
-
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
-import java.util.HashMap;
-
 
 import ij3d.Volume;
 
 public final class MCCube {
-    // vertexes
-    private Point3f[] v;
 
-    // interpolated values
+    private Point3f[] v;
     private Point3f[] e;
 
     private MCCube() {
@@ -31,16 +20,7 @@ public final class MCCube {
             e[i] = new Point3f();
     }
 
-    /**
-     * initializes a MCCube object
-     *        _________           0______x
-     *       /v0    v1/|         /|
-     *      /________/ |        / |
-     *      |v3    v2| /v5    y/  |z
-     *      |________|/
-     *       v7    v6
-     */
-    public void init(int x, int y, int z){
+    private void init(int x, int y, int z){
         v[0].set(x,     y,     z);
         v[1].set(x + 1, y,     z);
         v[2].set(x + 1, y + 1, z);
@@ -51,29 +31,15 @@ public final class MCCube {
         v[7].set(x,     y + 1, z + 1);
     }
 
-    /**
-     * computes the interpolated point along a specified whose
-     * intensity equals the reference value
-     * @param v1 first extremity of the edge
-     * @param v2 second extremity of the edge
-     * @param result stores the resulting edge
-     * return the point on the edge where intensity equals the isovalue;
-     * @return false if the interpolated point is beyond edge boundaries
-     */
     private boolean computeEdge(Point3f v1, int i1,
                                 Point3f v2, int i2,
                                 Point3f result, final Carrier car) {
 
-        // 30 --- 50 --- 70 : t=0.5
-        // 70 --- 50 --- 30 : t=0.5
-        ///int i1 = car.intensity(v1);
-        ///int i2 = car.intensity(v2);
         if(i2 < i1)
             return computeEdge(v2, i2, v1, i1, result, car);
 
         float t = (car.threshold - i1) / (float) (i2 - i1);
         if (t >= 0 && t <= 1) {
-            // v1 + t*(v2-v1)
             result.set(v2);
             result.sub(v1);
             result.scale(t);
@@ -84,10 +50,7 @@ public final class MCCube {
         return false;
     }
 
-    /**
-     * computes interpolated values along each edge of the cube
-     * (null if interpolated value doesn't belong to the edge)
-     */
+
     private void computeEdges(final Carrier car) {
         int i0 = car.intensity(v[0]);
         int i1 = car.intensity(v[1]);
@@ -114,31 +77,13 @@ public final class MCCube {
         this.computeEdge(v[2], i2, v[6], i6, e[11], car);
     }
 
-    /**
-     * indicates if a number corresponds to an ambigous case
-     * @param n number of the case to test
-     * @return true if the case if ambigous
-     */
-    private static boolean isAmbigous(int n) {
-        boolean result = false;
-        for (int index = 0; index < MCCube.ambigous.length; index++) {
-            result |= MCCube.ambigous[index] == n;
-        }
-        return result;
-    }
-
     private void getTriangles(List<Point3f> list, final Carrier car){
         int cn = caseNumber(car);
-        boolean directTable = !(isAmbigous(cn));
-        directTable = true;
 
-        // address in the table
-        int offset = directTable ? cn*15 : (255-cn)*15;
+        int offset = cn * 15;
         for(int index = 0; index < 5; index++){
-            // if there's a triangle
             if (faces[offset] != -1) {
-                // pick up vertexes of the current triangle
-                list.add(new Point3f(this.e[faces[offset+0]]));
+                list.add(new Point3f(this.e[faces[offset]]));
                 list.add(new Point3f(this.e[faces[offset+1]]));
                 list.add(new Point3f(this.e[faces[offset+2]]));
             }
@@ -146,53 +91,18 @@ public final class MCCube {
         }
     }
 
-    /**
-     * computes the case number of the cube
-     * @return the number of the case corresponding to the cube
-     */
     private int caseNumber(final Carrier car) {
         int caseNumber = 0;
-        for (int index = -1;
-             ++index < v.length;
-             caseNumber +=
-                     (car.intensity(v[index]) - car.threshold > 0)
+        for (int index = -1; ++index < v.length; caseNumber +=
+                (car.intensity(v[index]) - car.threshold > 0)
                              ? 1 << index
                              : 0);
         return caseNumber;
     }
 
-    /**
-     * An encapsulating class to avoid thread collisions on static fields.
-     */
-    private static final class Carrier {
-        int w, h, d;
-        Volume volume;
-        float threshold;
-
-        final int intensity(final Point3f p) {
-            if(p.x < 0 || p.y < 0 || p.z < 0
-                    || p.x >= w || p.y >= h || p.z >= d)
-                return 0;
-            return volume.load((int)p.x, (int)p.y, (int)p.z);
-        }
-    }
-
-    /**
-     * Create a list of triangles from the specified image data and the
-     * given isovalue.
-     * @param volume
-     * @param thresh
-     * @return
-     */
-    public static final List<Point3f> getTriangles(Volume volume, int thresh){
-        List<Point3f> tri = new ArrayList<Point3f>();
-        final Carrier car = new Carrier();
-        car.w = volume.xDim;
-        car.h = volume.yDim;
-        car.d = volume.zDim;
-        car.threshold = thresh + 0.5f;
-        car.volume = volume;
-
+    public static List<Point3f> getTriangles(Volume volume, int thresh){
+        List<Point3f> tri = new ArrayList<>();
+        final Carrier car = new Carrier(volume.xDim,volume.yDim,volume.zDim,volume,thresh + 0.5f);
 
         MCCube cube = new MCCube();
         for(int z = -1; z < car.d+1; z+=1){
@@ -203,13 +113,8 @@ public final class MCCube {
                     cube.getTriangles(tri, car);
                 }
             }
-            IJ.showProgress(z, car.d-2);
         }
-
-
-        // convert pixel coordinates
-        for(int i = 0; i < tri.size(); i++) {
-            Point3f p = (Point3f)tri.get(i);
+        for (Point3f p : tri) {
             p.x = (float) (p.x * volume.pw + volume.minCoord.x);
             p.y = (float) (p.y * volume.ph + volume.minCoord.y);
             p.z = (float) (p.z * volume.pd + volume.minCoord.z);
@@ -217,70 +122,6 @@ public final class MCCube {
         return tri;
     }
 
-    protected static final int ambigous[] = {
-            250,
-            245,
-            237,
-            231,
-            222,
-            219,
-            189,
-            183,
-            175,
-            126,
-            123,
-            95,
-            234,
-            233,
-            227,
-            214,
-            213,
-            211,
-            203,
-            199,
-            188,
-            186,
-            182,
-            174,
-            171,
-            158,
-            151,
-            124,
-            121,
-            117,
-            109,
-            107,
-            93,
-            87,
-            62,
-            61,
-            229,
-            218,
-            181,
-            173,
-            167,
-            122,
-            94,
-            91,
-            150,
-            170,
-            195,
-            135,
-            149,
-            154,
-            163,
-            166,
-            169,
-            172,
-            180,
-            197,
-            202,
-            210,
-            225,
-            165
-    };
-
-    // triangles to be drawn in each case
     private static final int faces[] =
             {
                     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
