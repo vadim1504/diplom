@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CreateSTL {
 
-    public static void writeBinary(List<Point3f> surfaces,File file) {
+    public void writeBinary(List<Point3f> surfaces,File file) {
         DataOutputStream out = null;
         try {
             if (!file.exists()) {

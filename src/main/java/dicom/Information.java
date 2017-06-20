@@ -5,6 +5,7 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.util.TagUtils;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ public class Information {
             object = dis.readDicomObject();
             dis.close();
         } catch (Exception e) {
-            System.exit(0);
+            JOptionPane.showMessageDialog(null, "Некорректные исходные данные");
         }
         return object;
     }

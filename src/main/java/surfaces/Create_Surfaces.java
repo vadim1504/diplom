@@ -9,23 +9,17 @@ import java.util.List;
 public class Create_Surfaces {
 
     private ImagePlus image;
-    private String name;
 
     public Create_Surfaces(ImagePlus var1) {
         this.image = var1;
     }
 
-    public void run(String name) {
-        this.name = name;
-        this.runFromBinary();
-    }
-
-    public void runFromBinary() {
-        List var9 = this.getNeuropilMesh(this.image);
-        if (var9 != null && var9.size() != 0) {
-            File file = new File(name+".stl");
-            CreateSTL.writeBinary(var9, file);
+    public List run() {
+        List var = this.getNeuropilMesh(this.image);
+        if (var != null && var.size() != 0) {
+            return var;
         }
+        return null;
     }
 
     private List<Point3f> getNeuropilMesh(ImagePlus var1) {

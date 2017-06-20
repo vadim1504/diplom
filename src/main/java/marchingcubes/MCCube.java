@@ -11,7 +11,7 @@ public final class MCCube {
     private Point3f[] v;
     private Point3f[] e;
 
-    private MCCube() {
+    public MCCube() {
         this.v = new Point3f[8];
         for(int i = 0; i < 8; i++)
             v[i] = new Point3f();

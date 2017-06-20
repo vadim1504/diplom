@@ -12,7 +12,7 @@ public class MCTriangulator {
     public List<Point3f> getTriangles(ImagePlus image, int threshold) {
 
         Volume volume = new Volume(image);
-
-        return MCCube.getTriangles(volume, threshold);
+        MCCube mcCube = new MCCube();
+        return mcCube.getTriangles(volume, threshold);
     }
 }

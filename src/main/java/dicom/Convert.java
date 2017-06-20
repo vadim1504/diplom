@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 public class Convert {
 
-    public static BufferedImage convert(File file){
+    public BufferedImage convert(File file){
         Iterator iter = ImageIO.getImageReadersByFormatName("DICOM");
         ImageReader reader = (ImageReader) iter.next();
         DicomImageReadParam param = (DicomImageReadParam) reader.getDefaultReadParam();

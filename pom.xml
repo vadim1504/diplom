@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <maven.compile.version>3.6.0</maven.compile.version>
         <dcm4che.version>2.0.29</dcm4che.version>
         <ij.version>1.50a</ij.version>
         <javacv.version>1.3</javacv.version>
@@ -34,6 +35,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compile.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -78,6 +80,12 @@
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
             <version>${ij.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tools</artifactId>
+                    <groupId>com.sun</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
